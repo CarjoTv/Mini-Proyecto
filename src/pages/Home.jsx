@@ -1,65 +1,62 @@
-import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFetchProducts } from '../hooks/useFetchProducts';
 import ProductCard from '../components/ProductCard';
-import CategoryFilter from '../components/CategoryFilter';
 import Loading from '../components/Loading';
 
-export default function Home() {
+/**
+ * @description Componente de página principal.
+ * Obtiene productos de la API y aplica el filtrado por texto (searchTerm)
+ * y por categoría (vía URL).
+ * @param {string} searchTerm - Texto ingresado en el buscador del Header.
+ */
+export default function Home({ searchTerm }) {
   const { category } = useParams();
-  const [searchTerm, setSearchTerm] = useState('');
   
+  // URL dinámica: Si hay categoría en la URL la usa, si no, trae todo.
   const url = category 
     ? `https://fakestoreapi.com/products/category/${category}`
     : 'https://fakestoreapi.com/products';
 
-  const { data: products, loading, error, refetch } = useFetchProducts(url);
+  const { data: products, loading, error } = useFetchProducts(url);
 
-  // Filtrado en tiempo real (Punto 3 de la rúbrica)
-  const filteredProducts = Array.isArray(products) 
-    ? products.filter(p => p.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    : [];
+  /**
+   * @description Lógica de filtrado en tiempo real.
+   * Filtra los productos que vienen de la API basándose en el 'searchTerm'.
+   */
+  const filteredProducts = products.filter(p => 
+    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) return <Loading />;
+  
   if (error) return (
-    <div className="text-center py-20">
-      <p className="text-red-500 mb-4 font-bold">{error}</p>
-      <button onClick={refetch} className="bg-blue-600 text-white px-6 py-2 rounded-lg">Reintentar</button>
+    <div className="text-center py-20 bg-red-50 rounded-2xl border border-red-100">
+      <p className="text-red-600 font-semibold">{error}</p>
     </div>
   );
 
   return (
-    <div className="animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 capitalize">
-            {category ? category : 'Nuestra Colección'}
-          </h1>
-          <p className="text-slate-500">Explora productos de alta calidad</p>
-        </div>
-        
-        {/* Input del Buscador */}
-        <div className="relative w-full md:w-80">
-          <input 
-            type="text"
-            placeholder="Buscar producto..."
-            className="w-full pl-4 pr-10 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+    <div className="animate-in fade-in duration-700">
+      {/* Título de sección */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900 capitalize">
+          {category ? category.replace(/-/g, ' ') : 'Nuestra Colección'}
+        </h1>
+        <p className="text-slate-500">
+          {filteredProducts.length} productos encontrados
+        </p>
       </div>
 
-      <CategoryFilter />
-
+      {/* Grid Responsivo */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed">
-          <p className="text-slate-400 font-medium">No se encontraron productos.</p>
+        <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-3xl">
+          <p className="text-slate-400">No encontramos resultados para "{searchTerm}"</p>
         </div>
       )}
     </div>
