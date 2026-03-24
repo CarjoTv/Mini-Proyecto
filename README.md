@@ -4,13 +4,13 @@
 Aplicación de catálogo moderno desarrollada con React y Tailwind CSS que consume datos de la FakeStore API. Permite explorar productos por categorías, realizar búsquedas en tiempo real y visualizar detalles específicos de cada artículo con un diseño responsivo y minimalista.
 
 ## 🚀 Despliegue
-[Enlace a tu sitio en Vercel/Netlify]
+[\[Enlace a tu sitio en Vercel/Netlify\]](https://mini-proyecto-omega.vercel.app/)
 
 ## 📁 Repositorio
-[Enlace a tu repositorio de GitHub]
+[\[Enlace a tu repositorio de GitHub\]](https://github.com/CarjoTv/Mini-Proyecto.git)
 
 ## 🛠️ Instalación
-1. Clona el repositorio: `git clone [tu-url]`
+1. Clona el repositorio: `git clone https://github.com/CarjoTv/Mini-Proyecto.git`
 2. Instala las dependencias: `npm install`
 3. Inicia el proyecto: `npm run dev`
 
