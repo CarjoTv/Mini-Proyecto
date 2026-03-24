@@ -4,15 +4,14 @@ import ProductCard from '../components/ProductCard';
 import Loading from '../components/Loading';
 
 /**
- * @description Componente de página principal.
- * Obtiene productos de la API y aplica el filtrado por texto (searchTerm)
- * y por categoría (vía URL).
- * @param {string} searchTerm - Texto ingresado en el buscador del Header.
+ * @component Home
+ * @description Página de catálogo. Filtra productos por categoría (vía URL) 
+ * y por texto (vía prop searchTerm).
  */
 export default function Home({ searchTerm }) {
   const { category } = useParams();
   
-  // URL dinámica: Si hay categoría en la URL la usa, si no, trae todo.
+  // Define URL según si hay categoría en el HashRouter
   const url = category 
     ? `https://fakestoreapi.com/products/category/${category}`
     : 'https://fakestoreapi.com/products';
@@ -20,34 +19,30 @@ export default function Home({ searchTerm }) {
   const { data: products, loading, error } = useFetchProducts(url);
 
   /**
-   * @description Lógica de filtrado en tiempo real.
-   * Filtra los productos que vienen de la API basándose en el 'searchTerm'.
+   * Filtrado local: Compara el título del producto con el searchTerm.
+   * Se ejecuta en cada renderizado cuando el usuario escribe.
    */
-  const filteredProducts = products.filter(p => 
-    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = products.filter(product => 
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return <Loading />;
   
   if (error) return (
-    <div className="text-center py-20 bg-red-50 rounded-2xl border border-red-100">
-      <p className="text-red-600 font-semibold">{error}</p>
+    <div className="text-center py-20 bg-red-50 rounded-2xl border border-red-100 text-red-600">
+      <p className="font-semibold">{error}</p>
     </div>
   );
 
   return (
-    <div className="animate-in fade-in duration-700">
-      {/* Título de sección */}
+    <section className="animate-in fade-in duration-500">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 capitalize">
-          {category ? category.replace(/-/g, ' ') : 'Nuestra Colección'}
+          {category ? category.replace(/-/g, ' ') : 'Todos los productos'}
         </h1>
-        <p className="text-slate-500">
-          {filteredProducts.length} productos encontrados
-        </p>
+        <p className="text-slate-500">{filteredProducts.length} items encontrados</p>
       </div>
 
-      {/* Grid Responsivo */}
       {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredProducts.map(product => (
@@ -55,10 +50,10 @@ export default function Home({ searchTerm }) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-3xl">
-          <p className="text-slate-400">No encontramos resultados para "{searchTerm}"</p>
+        <div className="text-center py-24 border-2 border-dashed border-slate-200 rounded-3xl">
+          <p className="text-slate-400">No hay productos que coincidan con tu búsqueda.</p>
         </div>
       )}
-    </div>
+    </section>
   );
 }
